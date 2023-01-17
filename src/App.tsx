@@ -155,6 +155,8 @@ const INITIAL_STATE: IAppState = {
   assets: [],
 };
 
+const noQrcode = true;
+
 class App extends React.Component<any, any> {
   public state: IAppState = {
     ...INITIAL_STATE,
@@ -165,19 +167,25 @@ class App extends React.Component<any, any> {
     const bridge = "https://bridge.walletconnect.org";
 
     // create new connector
-    const connector = new WalletConnect({ bridge, qrcodeModal: QRCodeModal });
-
+    const connector = noQrcode
+        ? new WalletConnect({ bridge })
+        : new WalletConnect({ bridge, qrcodeModal: QRCodeModal });
     await this.setState({ connector });
 
     // check if already connected
     if (!connector.connected) {
       // create new session
       await connector.createSession();
+      if (noQrcode) {
+        const link = "https://dapp-web.dev.uptn.io/" + this.state.connector?.uri;
+        window.open(link);
+      }
     }
 
     // subscribe to events
     await this.subscribeToEvents();
   };
+
   public subscribeToEvents = () => {
     const { connector } = this.state;
 
@@ -634,96 +642,96 @@ class App extends React.Component<any, any> {
       result,
     } = this.state;
     return (
-      <SLayout>
-        <Column maxWidth={1000} spanHeight>
-          <Header
-            connected={connected}
-            address={address}
-            chainId={chainId}
-            killSession={this.killSession}
-          />
-          <SContent>
-            {!address && !assets.length ? (
-              <SLanding center>
-                <h3>
-                  {`Try out WalletConnect`}
-                  <br />
-                  <span>{`v${process.env.REACT_APP_VERSION}`}</span>
-                </h3>
-                <SButtonContainer>
-                  <SConnectButton left onClick={this.connect} fetching={fetching}>
-                    {"Connect to WalletConnect"}
-                  </SConnectButton>
-                </SButtonContainer>
-              </SLanding>
+        <SLayout>
+          <Column maxWidth={1000} spanHeight>
+            <Header
+                connected={connected}
+                address={address}
+                chainId={chainId}
+                killSession={this.killSession}
+            />
+            <SContent>
+              {!address && !assets.length ? (
+                  <SLanding center>
+                    <h3>
+                      {`Try out WalletConnect`}
+                      <br />
+                      <span>{`v${process.env.REACT_APP_VERSION}`}</span>
+                    </h3>
+                    <SButtonContainer>
+                      <SConnectButton left onClick={this.connect} fetching={fetching}>
+                        {"Connect to WalletConnect"}
+                      </SConnectButton>
+                    </SButtonContainer>
+                  </SLanding>
+              ) : (
+                  <SBalances>
+                    <Banner />
+                    <h3>Actions</h3>
+                    <Column center>
+                      <STestButtonContainer>
+                        <STestButton left onClick={this.testSendTransaction}>
+                          {"eth_sendTransaction"}
+                        </STestButton>
+                        <STestButton left onClick={this.testSignTransaction}>
+                          {"eth_signTransaction"}
+                        </STestButton>
+                        <STestButton left onClick={this.testSignTypedData}>
+                          {"eth_signTypedData"}
+                        </STestButton>
+                        <STestButton left onClick={this.testLegacySignMessage}>
+                          {"eth_sign (legacy)"}
+                        </STestButton>
+                        <STestButton left onClick={this.testStandardSignMessage}>
+                          {"eth_sign (standard)"}
+                        </STestButton>
+                        <STestButton left onClick={this.testPersonalSignMessage}>
+                          {"personal_sign"}
+                        </STestButton>
+                      </STestButtonContainer>
+                    </Column>
+                    <h3>Balances</h3>
+                    {!fetching ? (
+                        <AccountAssets chainId={chainId} assets={assets} />
+                    ) : (
+                        <Column center>
+                          <SContainer>
+                            <Loader />
+                          </SContainer>
+                        </Column>
+                    )}
+                  </SBalances>
+              )}
+            </SContent>
+          </Column>
+          <Modal show={showModal} toggleModal={this.toggleModal}>
+            {pendingRequest ? (
+                <SModalContainer>
+                  <SModalTitle>{"Pending Call Request"}</SModalTitle>
+                  <SContainer>
+                    <Loader />
+                    <SModalParagraph>{"Approve or reject request using your wallet"}</SModalParagraph>
+                  </SContainer>
+                </SModalContainer>
+            ) : result ? (
+                <SModalContainer>
+                  <SModalTitle>{"Call Request Approved"}</SModalTitle>
+                  <STable>
+                    {Object.keys(result).map(key => (
+                        <SRow key={key}>
+                          <SKey>{key}</SKey>
+                          <SValue>{result[key].toString()}</SValue>
+                        </SRow>
+                    ))}
+                  </STable>
+                </SModalContainer>
             ) : (
-              <SBalances>
-                <Banner />
-                <h3>Actions</h3>
-                <Column center>
-                  <STestButtonContainer>
-                    <STestButton left onClick={this.testSendTransaction}>
-                      {"eth_sendTransaction"}
-                    </STestButton>
-                    <STestButton left onClick={this.testSignTransaction}>
-                      {"eth_signTransaction"}
-                    </STestButton>
-                    <STestButton left onClick={this.testSignTypedData}>
-                      {"eth_signTypedData"}
-                    </STestButton>
-                    <STestButton left onClick={this.testLegacySignMessage}>
-                      {"eth_sign (legacy)"}
-                    </STestButton>
-                    <STestButton left onClick={this.testStandardSignMessage}>
-                      {"eth_sign (standard)"}
-                    </STestButton>
-                    <STestButton left onClick={this.testPersonalSignMessage}>
-                      {"personal_sign"}
-                    </STestButton>
-                  </STestButtonContainer>
-                </Column>
-                <h3>Balances</h3>
-                {!fetching ? (
-                  <AccountAssets chainId={chainId} assets={assets} />
-                ) : (
-                  <Column center>
-                    <SContainer>
-                      <Loader />
-                    </SContainer>
-                  </Column>
-                )}
-              </SBalances>
+                <SModalContainer>
+                  <SModalTitle>{"Call Request Rejected"}</SModalTitle>
+                </SModalContainer>
             )}
-          </SContent>
-        </Column>
-        <Modal show={showModal} toggleModal={this.toggleModal}>
-          {pendingRequest ? (
-            <SModalContainer>
-              <SModalTitle>{"Pending Call Request"}</SModalTitle>
-              <SContainer>
-                <Loader />
-                <SModalParagraph>{"Approve or reject request using your wallet"}</SModalParagraph>
-              </SContainer>
-            </SModalContainer>
-          ) : result ? (
-            <SModalContainer>
-              <SModalTitle>{"Call Request Approved"}</SModalTitle>
-              <STable>
-                {Object.keys(result).map(key => (
-                  <SRow key={key}>
-                    <SKey>{key}</SKey>
-                    <SValue>{result[key].toString()}</SValue>
-                  </SRow>
-                ))}
-              </STable>
-            </SModalContainer>
-          ) : (
-            <SModalContainer>
-              <SModalTitle>{"Call Request Rejected"}</SModalTitle>
-            </SModalContainer>
-          )}
-        </Modal>
-      </SLayout>
+          </Modal>
+        </SLayout>
     );
   };
 }
