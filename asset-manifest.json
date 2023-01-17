@@ -1,0 +1,15 @@
+{
+  "main.js": "/walletconnect-example-dapp/static/js/main.eac7217b.chunk.js",
+  "main.js.map": "/walletconnect-example-dapp/static/js/main.eac7217b.chunk.js.map",
+  "static/js/1.540304f6.chunk.js": "/walletconnect-example-dapp/static/js/1.540304f6.chunk.js",
+  "static/js/1.540304f6.chunk.js.map": "/walletconnect-example-dapp/static/js/1.540304f6.chunk.js.map",
+  "runtime~main.js": "/walletconnect-example-dapp/static/js/runtime~main.b9fb507d.js",
+  "runtime~main.js.map": "/walletconnect-example-dapp/static/js/runtime~main.b9fb507d.js.map",
+  "static/media/walletconnect-banner.png": "/walletconnect-example-dapp/static/media/walletconnect-banner.e1cb8d21.png",
+  "static/media/erc20.svg": "/walletconnect-example-dapp/static/media/erc20.90607899.svg",
+  "static/media/eth.svg": "/walletconnect-example-dapp/static/media/eth.42bca731.svg",
+  "static/media/xdai.png": "/walletconnect-example-dapp/static/media/xdai.e37299a8.png",
+  "index.html": "/walletconnect-example-dapp/index.html",
+  "precache-manifest.873e7b833b54418f942229f16925e53f.js": "/walletconnect-example-dapp/precache-manifest.873e7b833b54418f942229f16925e53f.js",
+  "service-worker.js": "/walletconnect-example-dapp/service-worker.js"
+}
