@@ -28,7 +28,7 @@ self.__precacheManifest = [
     "url": "/walletconnect-example-dapp/static/media/xdai.e37299a8.png"
   },
   {
-    "revision": "bc5426c4f28dc4037ab6b10afe574946",
+    "revision": "585a0a758f464c2b24ab356a52718bd7",
     "url": "/walletconnect-example-dapp/index.html"
   }
 ];
